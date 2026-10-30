@@ -1,0 +1,96 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+source_commit="${1:-HEAD}"
+public_repo="https://github.com/koontzcharlie07-netizen/artifinance.git"
+snapshot_root="$(mktemp -d "${TMPDIR:-/tmp}/artifinance-public.XXXXXX")"
+snapshot="$snapshot_root/source"
+report="$snapshot_root/gitleaks.json"
+
+cleanup() {
+  rm -rf "$snapshot_root"
+}
+trap cleanup EXIT
+
+command -v git >/dev/null
+command -v gitleaks >/dev/null
+command -v jq >/dev/null
+
+git -C "$repo_root" rev-parse --verify "${source_commit}^{commit}" >/dev/null
+mkdir -p "$snapshot"
+git -C "$repo_root" archive "$source_commit" | tar -x -C "$snapshot"
+
+# These files are useful only to the private production repository. The encrypted
+# credentials are not decryptable without a master key, but are excluded anyway.
+rm -f "$snapshot/config/credentials.yml.enc" "$snapshot/DEPLOY.md" "$snapshot/fly.toml"
+rm -rf "$snapshot/deploy/vercel-proxy"
+
+# The shared PostHog project token is a write-only browser token, not an admin
+# credential. The public snapshot still takes it from the environment.
+perl -0pi -e 's/api_key: "phc_[^"]+"/api_key: ENV["POSTHOG_FEEDBACK_PROJECT_KEY"].presence/' \
+  "$snapshot/config/initializers/posthog.rb"
+
+# VCR recordings contain sandbox-only, but still credential-shaped, Plaid tokens.
+find "$snapshot/test/vcr_cassettes/plaid" -type f -name '*.yml' -print0 | \
+  xargs -0 perl -pi -e 's/access-sandbox-[A-Za-z0-9_-]+/access-sandbox-REDACTED/g; s/public-sandbox-[A-Za-z0-9_-]+/public-sandbox-REDACTED/g; s/link-sandbox-[A-Za-z0-9_-]+/link-sandbox-REDACTED/g'
+
+gitleaks dir "$snapshot" --redact=100 --report-format json --report-path "$report" \
+  --no-banner --no-color --exit-code 0 --log-level warn
+
+# Gitleaks' generic detector intentionally remains strict. These exact findings
+# are reviewed examples/test fixtures; a new path, rule, or line fails closed.
+unexpected=0
+while IFS=$'\t' read -r file rule line; do
+  relative="${file#*/source/}"
+  finding="$relative:$rule:$line"
+  case "$finding" in
+    config/locales/views/settings/de.yml:generic-api-key:493|\
+    docs/hosting/mcp.md:curl-auth-header:199|\
+    docs/hosting/mcp.md:curl-auth-header:233|\
+    docs/hosting/mcp.md:curl-auth-header:266|\
+    test/controllers/settings/api_keys_controller_test.rb:generic-api-key:27|\
+    test/controllers/settings/api_keys_controller_test.rb:generic-api-key:48|\
+    test/controllers/settings/plaid_credentials_controller_test.rb:generic-api-key:137|\
+    test/controllers/settings/plaid_credentials_controller_test.rb:generic-api-key:179|\
+    test/fixtures/coinspot_items.yml:generic-api-key:4|\
+    test/fixtures/redbark_items.yml:generic-api-key:5|\
+    test/models/api_key_test.rb:generic-api-key:11|\
+    test/models/api_key_test.rb:generic-api-key:325|\
+    test/models/family_plaid_credential_test.rb:generic-api-key:9|\
+    test/models/family_plaid_credential_test.rb:generic-api-key:23|\
+    test/models/family_plaid_credential_test.rb:generic-api-key:27|\
+    test/models/family_plaid_credential_test.rb:generic-api-key:29|\
+    test/models/onchain/solana_adapter_test.rb:generic-api-key:7|\
+    test/models/trade_republic_client_test.rb:generic-api-key:189|\
+    test/models/trade_republic_client_test.rb:generic-api-key:821)
+      ;;
+    *)
+      printf 'Unexpected Gitleaks finding: %s\n' "$finding" >&2
+      unexpected=1
+      ;;
+  esac
+done < <(jq -r '.[] | [.File, .RuleID, (.StartLine | tostring)] | @tsv' "$report")
+
+if (( unexpected != 0 )); then
+  exit 1
+fi
+
+finding_count="$(jq 'length' "$report")"
+printf 'Gitleaks: %s reviewed example/test findings; 0 unreviewed findings.\n' "$finding_count"
+
+if [[ "${PUBLIC_SNAPSHOT_DRY_RUN:-0}" == "1" ]]; then
+  printf 'Dry run complete for %s.\n' "$(git -C "$repo_root" rev-parse "$source_commit")"
+  exit 0
+fi
+
+git -C "$snapshot" init -b main >/dev/null
+git -C "$snapshot" config user.name "Artifinance Source Publisher"
+git -C "$snapshot" config user.email "privacy@artifactlabs.ai"
+git -C "$snapshot" add --all
+git -C "$snapshot" commit -m "Publish source snapshot of $(git -C "$repo_root" rev-parse --short=12 "$source_commit")" >/dev/null
+git -C "$snapshot" remote add origin "$public_repo"
+git -C "$snapshot" push --force origin main
+
+printf 'Published %s from %s.\n' "$public_repo" "$(git -C "$repo_root" rev-parse "$source_commit")"

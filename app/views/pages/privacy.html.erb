@@ -1,0 +1,96 @@
+<% content_for :title, t(".title") %>
+<%= render "pages/legal_styles" %>
+
+<article class="legal">
+  <div class="legal-inner">
+    <h1>Artifinance Privacy Policy</h1>
+    <p class="legal-effective">Effective October 30, 2026</p>
+
+    <p class="legal-lede">This Policy describes the personal data Artifactory Inc. collects through Artifinance, the purposes for which it is processed, the parties to whom it is disclosed, and the rights available to you.</p>
+
+    <section class="legal-summary">
+      <h2>Summary</h2>
+      <ul>
+        <li>Each household supplies credentials for its own Plaid account to connect financial institutions.</li>
+        <li>Personal data is used to provide and secure the Service. It is not sold, shared for cross-context behavioral advertising, or used for advertising.</li>
+        <li>Plaid credentials and access tokens are encrypted at rest, and the Service uses TLS for data in transit.</li>
+        <li>You may access, correct, export, or delete your data, subject to the rights of other members of your household and applicable law.</li>
+      </ul>
+    </section>
+
+    <h2>Controller</h2>
+    <p>Artifactory Inc. ("Artifactory," "we," or "us") provides and operates Artifinance (the "Service") at <a href="https://artifinance-app.vercel.app">artifinance-app.vercel.app</a> and determines the purposes and means of the processing described in this Policy. Inquiries may be directed to privacy@artifactlabs.ai.</p>
+
+    <h2>Data collected</h2>
+    <p>We obtain personal data from you and other members of your household, from Plaid and connected financial institutions at your direction, and automatically when you use the Service.</p>
+
+    <h3>Account data</h3>
+    <p>Name, email address, password retained solely as a bcrypt hash, multi-factor authentication secrets where enabled, preferences, and records of account membership and access.</p>
+
+    <h3>Financial data</h3>
+    <p>Where a household connects a financial institution: the institution's name; account names, types, balances, and masked account numbers; transactions, including amount, date, description, merchant, and category; and, for investment and loan accounts, holdings and liabilities.</p>
+
+    <h3>Plaid credentials</h3>
+    <p>The Plaid client identifier and secret supplied by the household and the access token issued by Plaid for each connection.</p>
+
+    <h3>Data you provide</h3>
+    <p>Manual accounts and transactions, categories, budgets, notes, uploaded files, and communications or feedback you submit.</p>
+
+    <h3>Technical and usage data</h3>
+    <p>IP address, browser user agent, session records, and server logs. The Service uses a cookie to maintain your session. On sign-up, sign-in, and password-reset forms, Cloudflare Turnstile processes browser and device signals to distinguish persons from automated traffic.</p>
+    <p>Once per day for each signed-in user, the Service sends PostHog a daily pseudonym, the software version, whether preview features are enabled, and the IP address, from which PostHog may derive approximate location. The pseudonym changes daily and is not an account identifier. If you use a preview cash-flow view, PostHog also receives limited display and comparison events and any feedback you elect to submit; it does not receive account numbers, financial amounts, graph data, categories, or date ranges through that reporting.</p>
+
+    <h2>Purposes</h2>
+    <p>We process personal data to:</p>
+    <ul>
+      <li>provide, maintain, and improve the Service, including its accounts, budgets, classifications, analyses, and forecasts;</li>
+      <li>synchronize data from connected institutions through Plaid;</li>
+      <li>administer accounts and send transactional email, including verification and password-reset messages;</li>
+      <li>authenticate users, prevent abuse, enforce applicable terms, and protect the Service and its users;</li>
+      <li>measure limited usage and obtain optional product feedback; and</li>
+      <li>comply with law and diagnose and remedy faults.</li>
+    </ul>
+    <p>Where applicable law requires a legal basis, processing is necessary to perform our contract with you, to comply with law, or for our legitimate interests in providing and securing the Service. We rely on consent where required. At the effective date, the Service does not transmit personal data to providers of artificial-intelligence services.</p>
+
+    <h2>Plaid</h2>
+    <p>Financial institutions are connected through Plaid using the Plaid account and credentials supplied by your household. Plaid's collection and use of data are governed by the <a href="https://plaid.com/legal/#end-user-privacy-policy">Plaid End User Privacy Policy</a>. We use Plaid credentials to create and maintain connections, retrieve your household's financial data, and request revocation of connections when they are deleted.</p>
+
+    <h2>Disclosure</h2>
+    <p>We disclose personal data to the following processors only as necessary for the stated services:</p>
+    <ul>
+      <li><strong>Fly.io</strong>: application, database, and worker hosting; Fly.io-provisioned Upstash services provide caching and job queues, and Tigris provides file storage.</li>
+      <li><strong>Vercel</strong>: routing public requests to the Service.</li>
+      <li><strong>Resend</strong>: delivery of transactional email.</li>
+      <li><strong>Cloudflare</strong>: bot detection through Turnstile.</li>
+      <li><strong>Plaid</strong>: connection to financial institutions.</li>
+      <li><strong>PostHog</strong>: the limited usage reporting and optional feedback described above.</li>
+    </ul>
+    <p>The primary application and database are hosted in the United States. A processor may process data in other locations in accordance with its terms and applicable law.</p>
+    <p>Members of your household may access household data in accordance with their permissions. We may also disclose personal data as required by law or legal process; to protect the rights, property, or safety of Artifactory, users, or the public; or in connection with a merger, financing, acquisition, reorganization, or sale of assets, subject to appropriate confidentiality and notice where required.</p>
+    <p>We do not sell personal data or share it for cross-context behavioral advertising. We do not use or disclose sensitive personal data to infer characteristics about you.</p>
+
+    <h2>Security</h2>
+    <p>The Service uses TLS for data in transit. Plaid credentials and access tokens are encrypted at rest using AES-256-GCM, and saved credentials are not displayed in full. Passwords are retained only as bcrypt hashes. Email verification, rate limiting, and optional multi-factor authentication provide additional safeguards. No method of transmission or storage is entirely secure, and we cannot guarantee absolute security.</p>
+
+    <h2>Retention and deletion</h2>
+    <p>Account, financial, and user-provided data is retained while the relevant account or household remains active, unless a longer period is required by law or reasonably necessary to establish, exercise, or defend legal claims. Fly application logs are retained for 7 days, and application debug records are retained for 90 days. PostHog usage and feedback records are retained for one year under PostHog's default free-plan retention.</p>
+    <p>You may request deletion through the Service or by email. When the last user of a household deletes the account, we erase the household's accounts, transactions, access tokens, Plaid credentials, files, and account data. We request revocation of associated Plaid connections where the credentials required to do so remain available. If other members remain, household data remains available to them and we erase the departing user's account data, subject to records that must remain with the household.</p>
+    <p>Deleted data is removed from the live database immediately. Copies in our database provider's encrypted Fly Postgres backups, kept for about 10 days for point-in-time recovery, expire through normal rotation within 30 days at most and are restored only for disaster recovery. Deletion may be delayed to complete a pending revocation, satisfy law, prevent fraud or abuse, or resolve a dispute.</p>
+
+    <h2>Your rights</h2>
+    <p>You may access, correct, export, or delete personal data through the Service or by request to privacy@artifactlabs.ai. We may verify your identity and authority before acting and may retain information necessary to document the request.</p>
+    <p>Depending on your residence and applicable law, you may also have rights to know the categories, sources, purposes, and recipients of personal data; obtain a portable copy; correct or delete data; opt out of sale, sharing, or targeted advertising; limit certain uses of sensitive data; appeal a refusal; and receive equal service without discrimination for exercising a right. You may use an authorized agent where permitted. To appeal a decision, reply to the decision or email us with the subject "Privacy Appeal."</p>
+    <p>For California residents, the categories collected, sources, purposes, recipients, and retention criteria for the preceding twelve months are described above. We have not sold personal data, shared it for cross-context behavioral advertising, or offered a financial incentive for its collection. Because we do not sell or share personal data, there is no present need to submit an opt-out request.</p>
+
+    <h2>Children</h2>
+    <p>The Service is not directed to persons under 18 years of age, and they may not create an account. We do not knowingly collect personal data from a person under 18. If you believe a minor has provided personal data, contact us so that we may delete it.</p>
+
+    <h2>Changes</h2>
+    <p>We may revise this Policy prospectively. We will give notice of a material revision by email or within the Service before it takes effect and will obtain consent where required by law. The effective date above identifies the latest revision.</p>
+
+    <h2>Contact</h2>
+    <p>Artifactory Inc.<br>Operator of Artifinance<br>privacy@artifactlabs.ai</p>
+
+    <p class="legal-crossref">See also the <%= link_to "Artifinance Terms of Service", terms_path %>.</p>
+  </div>
+</article>

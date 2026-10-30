@@ -1,0 +1,26 @@
+---
+tr:
+  subscriptions:
+    create:
+      trial_already_used: Zaten bir deneme süresi başlatmış veya tamamlamışsınız.
+        Devam etmek için yükseltme yapın.
+      welcome: Artifinance'a hoş geldiniz!
+    self_hosted_alert: "%{product_name} kendi sunucunda barındırılan modda kullanılamaz."
+    success:
+      contribution_failed: Katkınız işlenirken bir sorun oluştu. Lütfen tekrar deneyin.
+      welcome_with_contribution: Artifinance'a hoş geldiniz! Katkınız için teşekkür ederiz.
+    upgrade:
+      account_settings: Hesap Ayarları
+      already_contributing: Zaten katkıda bulunuyorsunuz. Teşekkür ederiz!
+      contribute_and_support_sure: Katkıda bulun ve Artifinance'u destekle
+      cta: Bu kod tabanının geliştirilmesini desteklemeye devam edin!
+      header:
+        support: Destekle
+        sure: Artifinance
+        today: bugün
+      page_title: Yükselt
+      redirect_to_stripe: Bir sonraki adımda, kredi kartlarını bizim için işleyen
+        Stripe'a yönlendirileceksiniz.
+      sign_out: Çıkış yap
+      trial_over: Deneme süreniz sona erdi
+      trialing: Verileriniz %{days} gün içinde silinecek

@@ -1,0 +1,15 @@
+<%= turbo_frame_tag "modal" do %>
+  <%= render DS::Dialog.new do |dialog| %>
+    <% dialog.with_header(title: t(".title")) %>
+    <% dialog.with_body do %>
+      <div class="space-y-4 text-sm" data-testid="plaid-setup-step">
+        <p class="text-secondary"><%= t(".body") %></p>
+        <% if Current.user.admin? %>
+          <%= render DS::Link.new(text: t(".cta"), href: settings_plaid_credential_path(anchor: "plaid-setup-guide"), variant: "primary", frame: "_top") %>
+        <% else %>
+          <p class="text-secondary"><%= t(".admin_only") %></p>
+        <% end %>
+      </div>
+    <% end %>
+  <% end %>
+<% end %>

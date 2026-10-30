@@ -1,0 +1,35 @@
+en:
+  bug_reports:
+    unknown_browser: Unknown
+    new:
+      title: Report a bug
+      description: Tell us what went wrong and we will take a look.
+      what_happened: What happened?
+      what_happened_placeholder: Describe what you expected and what happened instead.
+      screenshot: Screenshot (optional)
+      screenshot_hint: PNG, JPEG, or WebP, up to 5 MB.
+      submit: Send bug report
+      automatic_details: The current page, browser, time, and your user ID are included automatically.
+    create:
+      thanks: Thanks — your bug report was sent.
+  activemodel:
+    attributes:
+      bug_report:
+        what_happened: What happened?
+        screenshot: Screenshot (optional)
+    errors:
+      models:
+        bug_report:
+          attributes:
+            screenshot:
+              unsupported_type: must be a PNG, JPEG, or WebP image
+              too_large: must be smaller than %{size}
+  bug_report_mailer:
+    report:
+      subject: "[%{product_name}] Bug report"
+      heading: "%{product_name} bug report"
+      what_happened: What happened
+      page_url: Page URL
+      browser: Browser
+      reported_at: Reported at
+      user_id: User ID

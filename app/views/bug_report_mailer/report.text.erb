@@ -1,0 +1,9 @@
+<%= t("bug_report_mailer.report.heading", product_name: product_name) %>
+
+<%= t("bug_report_mailer.report.what_happened") %>:
+<%= @what_happened %>
+
+<%= t("bug_report_mailer.report.page_url") %>: <%= @page_url %>
+<%= t("bug_report_mailer.report.browser") %>: <%= @browser %>
+<%= t("bug_report_mailer.report.reported_at") %>: <%= @reported_at.iso8601 %>
+<%= t("bug_report_mailer.report.user_id") %>: <%= @reporter_id %>

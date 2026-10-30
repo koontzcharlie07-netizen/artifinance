@@ -1,0 +1,225 @@
+<%
+  f = @forecast
+  usd = ->(v, digits = 0) { v.nil? ? "–" : number_to_currency(v, precision: digits) }
+  signed = ->(v) { (v.negative? ? "−" : "+") + number_to_currency(v.abs, precision: 2) }
+  day = ->(d) { d.strftime("%a %b %-d") }
+  card = "bg-container rounded-xl shadow-border-xs p-4"
+  th = "text-left text-xs font-medium text-secondary px-2 py-1 whitespace-nowrap"
+  td = "text-right text-sm text-primary px-2 py-1 whitespace-nowrap tabular-nums"
+  tdl = "text-left text-sm text-primary px-2 py-1"
+  badge = ->(ok) { ok ? %(<span class="mf-badge mf-ok">Verified</span>).html_safe : %(<span class="mf-badge mf-inf">Inferred</span>).html_safe }
+  low = f.lowest; low_high = f.lowest(high: true)
+  below0 = f.days.find { |d| d.balance.negative? }
+  below_cushion = f.days.select { |d| d.balance < MoneyForecast::CUSHION }
+  below0_high = f.days.find { |d| d.balance_high.negative? }
+  below_cushion_high = f.days.select { |d| d.balance_high < MoneyForecast::CUSHION }
+  nm = f.normal_month
+  risk = f.paycheck_late_risk
+  next_big = f.big_items.first
+
+  # -- chart geometry --
+  w, h, ml, mr, mt, mb = 960, 320, 64, 150, 16, 28
+  pts = [ [ f.today, f.start_balance, f.start_balance ] ] + f.days.map { |d| [ d.date, d.balance, d.balance_high ] }
+  values = pts.flat_map { |p| [ p[1], p[2] ] } + [ MoneyForecast::CUSHION, 0 ]
+  step = (values.max - values.min) > 12_000 ? 5_000 : 2_500
+  y_min = (values.min / step).floor * step
+  y_max = (values.max / step).ceil * step
+  n = pts.size - 1
+  x = ->(i) { ml + (w - ml - mr) * i.to_f / n }
+  y = ->(v) { mt + (h - mt - mb) * (y_max - v.to_f) / (y_max - y_min) }
+  path = ->(idx) { pts.each_with_index.map { |p, i| "#{i.zero? ? 'M' : 'L'}#{x.(i).round(1)},#{y.(p[idx]).round(1)}" }.join(" ") }
+  end_typ, end_high = y.(pts.last[1]), y.(pts.last[2])
+  if (end_typ - end_high).abs < 16
+    end_typ, end_high = (end_typ < end_high ? [ end_typ - 8, end_high + 8 ] : [ end_typ + 8, end_high - 8 ])
+  end
+  low_i = pts.index { |p| p[0] == low.date }
+%>
+<% content_for :page_header do %>
+  <div class="space-y-1 mb-6">
+    <h1 class="text-xl lg:text-3xl font-medium text-primary">Forecast</h1>
+    <p class="text-sm text-secondary">
+      Your checking balance, day by day from today (<%= day.(f.today) %>) to <%= day.(f.end_date) %>.
+      Worked out from your live data each time this page opens, so every sync updates it. Nothing here is typed in.
+    </p>
+  </div>
+<% end %>
+<style>
+  .mf-badge { font-size: 11px; border-radius: 9999px; padding: 1px 7px; white-space: nowrap; border: 1px solid currentColor; }
+  .mf-ok { color: #0a7f0a; } .mf-inf { color: #a15c00; }
+  .mf-s1 { stroke: #2a78d6; } .mf-s2 { stroke: #eb6834; } .mf-f1 { fill: #2a78d6; }
+  .mf-sw1 { background: #2a78d6; } .mf-sw2 { background: #eb6834; }
+  .mf-grid { stroke: currentColor; opacity: .12; } .mf-axis { fill: currentColor; opacity: .6; font-size: 11px; }
+  .mf-lbl { fill: currentColor; font-size: 12px; } .mf-cushion { stroke: currentColor; opacity: .55; stroke-dasharray: 5 4; }
+  .mf-hit { fill: transparent; } .mf-hit:hover { fill: currentColor; fill-opacity: .07; }
+  .mf-chart { color: var(--color-gray-500, #6b7280); }
+  html[data-theme="dark"] .mf-ok { color: #4cc24c; } html[data-theme="dark"] .mf-inf { color: #f0a841; }
+  html[data-theme="dark"] .mf-s1 { stroke: #3987e5; } html[data-theme="dark"] .mf-s2 { stroke: #d95926; }
+  html[data-theme="dark"] .mf-f1 { fill: #3987e5; }
+  html[data-theme="dark"] .mf-sw1 { background: #3987e5; } html[data-theme="dark"] .mf-sw2 { background: #d95926; }
+</style>
+
+<div class="space-y-6 pb-12">
+  <% if below0 %>
+    <div class="<%= card %>" style="border-left: 4px solid #d03b3b">
+      <p class="text-lg font-medium text-primary">⛔ Below $0: checking goes negative on <%= day.(below0.date) %> (<%= usd.(below0.balance) %>).</p>
+  <% elsif below_cushion.any? %>
+    <div class="<%= card %>" style="border-left: 4px solid #fab219">
+      <p class="text-lg font-medium text-primary">⚠ Under your <%= usd.(MoneyForecast::CUSHION) %> cushion on <%= below_cushion.size %> day<%= "s" unless below_cushion.size == 1 %>, first on <%= day.(below_cushion.first.date) %> (<%= usd.(below_cushion.first.balance) %>).</p>
+  <% else %>
+    <div class="<%= card %>" style="border-left: 4px solid #0ca30c">
+      <p class="text-lg font-medium text-primary">✓ OK: checking stays above your <%= usd.(MoneyForecast::CUSHION) %> cushion every day. The lowest point is <%= usd.(low.balance) %> on <%= day.(low.date) %>.</p>
+  <% end %>
+      <p class="text-sm text-secondary mt-1">
+        At the higher card-spending rate:
+        <% if below0_high %>below $0 on <%= day.(below0_high.date) %> (<%= usd.(below0_high.balance_high) %>).
+        <% elsif below_cushion_high.any? %>under the cushion on <%= below_cushion_high.size %> days, first <%= day.(below_cushion_high.first.date) %>.
+        <% else %>still above the cushion; lowest <%= usd.(low_high.balance_high) %> on <%= day.(low_high.date) %>.<% end %>
+        <% if risk %>
+          If the <%= day.(risk[0].date) %> paycheck posted a day late, that day would be <%= usd.(risk[1]) %><%= risk[1] < MoneyForecast::CUSHION ? (risk[1].negative? ? ", below $0" : ", under the cushion") : "" %>.
+        <% end %>
+      </p>
+    </div>
+
+  <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+    <% [
+      ["Lowest balance", usd.(low.balance), day.(low.date)],
+      ["Days under #{usd.(MoneyForecast::CUSHION)}", below_cushion.size.to_s, "#{below_cushion_high.size} at the higher card rate · #{f.days.count { |d| d.balance.negative? }} below $0"],
+      ["Next big item", next_big ? signed.(next_big.amount) : "–", next_big ? "#{next_big.name} · #{day.(next_big.date)}" : ""],
+      ["Normal month", usd.(nm[:left]), "left of #{usd.(nm[:take_home])} take-home (#{nm[:savings_rate] ? (nm[:savings_rate] * 100).round : '–'}%)"]
+    ].each do |label, value, hint| %>
+      <div class="<%= card %>">
+        <p class="text-xs text-secondary"><%= label %></p>
+        <p class="text-xl font-medium text-primary tabular-nums"><%= value %></p>
+        <p class="text-xs text-subdued"><%= hint %></p>
+      </div>
+    <% end %>
+  </div>
+
+  <div class="<%= card %>">
+    <h2 class="text-base font-medium text-primary mb-1">Checking balance, day by day</h2>
+    <div class="flex flex-wrap gap-4 text-xs text-secondary mb-2">
+      <span class="inline-flex items-center gap-1"><span class="mf-sw1" style="display:inline-block;width:16px;height:2px"></span> Typical spending</span>
+      <span class="inline-flex items-center gap-1"><span class="mf-sw2" style="display:inline-block;width:16px;height:2px"></span> Higher card spending (what you've paid Apple lately)</span>
+      <span class="inline-flex items-center gap-1"><span style="display:inline-block;width:16px;border-top:2px dashed currentColor;opacity:.55"></span> <%= usd.(MoneyForecast::CUSHION) %> cushion</span>
+    </div>
+    <div class="mf-chart">
+      <svg viewBox="0 0 <%= w %> <%= h %>" width="100%" role="img" aria-label="Checking balance forecast; lowest <%= usd.(low.balance) %> on <%= day.(low.date) %>">
+        <% (y_min..y_max).step(step).each do |v| %>
+          <line class="mf-grid" x1="<%= ml %>" x2="<%= w - mr %>" y1="<%= y.(v).round(1) %>" y2="<%= y.(v).round(1) %>" stroke-width="<%= v.zero? ? 1.5 : 1 %>"/>
+          <text class="mf-axis" x="<%= ml - 6 %>" y="<%= y.(v).round(1) + 4 %>" text-anchor="end"><%= usd.(v) %></text>
+        <% end %>
+        <% pts.each_with_index do |p, i| next unless p[0].day == 1 %>
+          <text class="mf-axis" x="<%= x.(i).round(1) %>" y="<%= h - 8 %>" text-anchor="middle"><%= p[0].strftime("%b %-d") %></text>
+          <line class="mf-grid" x1="<%= x.(i).round(1) %>" x2="<%= x.(i).round(1) %>" y1="<%= mt %>" y2="<%= h - mb %>"/>
+        <% end %>
+        <line class="mf-cushion" x1="<%= ml %>" x2="<%= w - mr %>" y1="<%= y.(MoneyForecast::CUSHION).round(1) %>" y2="<%= y.(MoneyForecast::CUSHION).round(1) %>" stroke-width="1.5"/>
+        <path class="mf-s2" d="<%= path.(2) %>" fill="none" stroke-width="2" stroke-linejoin="round"/>
+        <path class="mf-s1" d="<%= path.(1) %>" fill="none" stroke-width="2" stroke-linejoin="round"/>
+        <% if low_i %>
+          <circle class="mf-f1" cx="<%= x.(low_i).round(1) %>" cy="<%= y.(low.balance).round(1) %>" r="4.5" stroke="var(--color-white, #fff)" stroke-width="2"/>
+          <text class="mf-lbl" x="<%= x.(low_i).round(1) %>" y="<%= (y.(low.balance) + 20).round(1) %>" text-anchor="middle">Low <%= usd.(low.balance) %> · <%= low.date.strftime("%b %-d") %></text>
+        <% end %>
+        <text class="mf-lbl" x="<%= w - mr + 6 %>" y="<%= end_typ.round(1) + 4 %>">Typical <%= usd.(pts.last[1]) %></text>
+        <text class="mf-lbl" x="<%= w - mr + 6 %>" y="<%= end_high.round(1) + 4 %>">Higher <%= usd.(pts.last[2]) %></text>
+        <% pts.each_with_index do |p, i|
+             d = f.days.find { |dd| dd.date == p[0] }
+             tip = "#{day.(p[0])}: #{usd.(p[1], 2)} typical · #{usd.(p[2], 2)} higher"
+             tip += "\n" + d.events.map { |e| "#{e.name} #{signed.(e.amount)}" }.join("\n") if d && d.events.any? %>
+          <rect class="mf-hit" x="<%= (x.(i) - (w - ml - mr) / n / 2.0).round(1) %>" y="<%= mt %>" width="<%= ((w - ml - mr) / n.to_f).round(2) %>" height="<%= h - mt - mb %>"><title><%= tip %></title></rect>
+        <% end %>
+      </svg>
+    </div>
+    <p class="text-xs text-subdued mt-1">Hover a day for its balance and what happens that day. Every day also takes <%= usd.(f.everyday_daily, 2) %> of everyday checking spending. The full table is below.</p>
+  </div>
+
+  <div class="<%= card %> overflow-x-auto">
+    <h2 class="text-base font-medium text-primary mb-2">Upcoming big items ($500 or more)</h2>
+    <table class="w-full">
+      <thead><tr><th class="<%= th %>">Date</th><th class="<%= th %>">Item</th><th class="<%= th %> text-right">Amount</th><th class="<%= th %>">End of day</th><th class="<%= th %>"></th><th class="<%= th %>">Basis</th></tr></thead>
+      <tbody>
+        <% f.big_items.each do |e| d = f.days.find { |dd| dd.date == e.date } %>
+          <tr class="border-t border-tertiary">
+            <td class="<%= tdl %> whitespace-nowrap"><%= day.(e.date) %></td>
+            <td class="<%= tdl %>"><%= e.name %></td>
+            <td class="<%= td %>"><%= signed.(e.amount) %></td>
+            <td class="<%= td %> text-secondary"><%= usd.(d&.balance) %></td>
+            <td class="px-2 py-1"><%= badge.(e.verified) %></td>
+            <td class="text-xs text-secondary px-2 py-1"><%= e.basis %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+
+  <% if f.one_offs.any? %>
+    <div class="<%= card %> overflow-x-auto">
+      <h2 class="text-base font-medium text-primary mb-1">One-off purchases, set aside</h2>
+      <p class="text-xs text-secondary mb-2">Purchases of <%= usd.(MoneyForecast::ONE_OFF) %> or more in the last 90 days that don't repeat. They're left out of the typical spending rates, so the forecast assumes no new ones. Another month like that would come out of checking when the card is paid.</p>
+      <table class="w-full">
+        <tbody>
+          <% f.one_offs.each do |o| %>
+            <tr class="border-t border-tertiary">
+              <td class="<%= tdl %> whitespace-nowrap"><%= o[:date].strftime("%b %-d") %></td>
+              <td class="<%= tdl %>"><%= (o[:merchant].presence || o[:name]).to_s.truncate(48) %></td>
+              <td class="text-sm text-secondary px-2 py-1"><%= o[:account_name] %></td>
+              <td class="<%= td %>"><%= usd.(o[:amount], 2) %></td>
+              <td class="text-xs text-secondary px-2 py-1"><%= "refunded #{usd.(o[:refunded], 2)}" if o[:refunded].positive? %></td>
+            </tr>
+          <% end %>
+          <tr class="border-t border-tertiary font-medium"><td class="<%= tdl %>" colspan="3">Total, after refunds</td><td class="<%= td %>"><%= usd.(nm[:one_offs], 2) %></td><td></td></tr>
+        </tbody>
+      </table>
+    </div>
+  <% end %>
+
+  <div class="<%= card %> overflow-x-auto">
+    <h2 class="text-base font-medium text-primary mb-2">Assumptions</h2>
+    <table class="w-full">
+      <thead><tr><th class="<%= th %>">Assumption</th><th class="<%= th %>"></th><th class="<%= th %>">Where it comes from</th></tr></thead>
+      <tbody>
+        <% f.assumption_list.each do |a| %>
+          <tr class="border-t border-tertiary">
+            <td class="<%= tdl %>"><%= a.text %></td>
+            <td class="px-2 py-1"><%= badge.(a.verified) %></td>
+            <td class="text-xs text-secondary px-2 py-1"><%= a.source %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+    <p class="text-xs text-subdued mt-2">Verified: seen in your transactions or balances. Inferred: a pattern or estimate the forecast relies on.</p>
+  </div>
+
+  <details class="<%= card %>">
+    <summary class="text-base font-medium text-primary cursor-pointer">Every scheduled item (<%= f.events.size %>)</summary>
+    <table class="w-full mt-2">
+      <tbody>
+        <% f.events.each do |e| %>
+          <tr class="border-t border-tertiary">
+            <td class="<%= tdl %> whitespace-nowrap"><%= day.(e.date) %></td>
+            <td class="<%= tdl %>"><%= e.name %></td>
+            <td class="<%= td %>"><%= signed.(e.amount) %></td>
+            <td class="px-2 py-1"><%= badge.(e.verified) %></td>
+            <td class="text-xs text-secondary px-2 py-1"><%= e.basis %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </details>
+
+  <details class="<%= card %>">
+    <summary class="text-base font-medium text-primary cursor-pointer">Daily balances as a table</summary>
+    <table class="w-full mt-2">
+      <thead><tr><th class="<%= th %>">Day</th><th class="<%= th %> text-right">Typical</th><th class="<%= th %> text-right">Higher card spending</th><th class="<%= th %>">What happens (typical)</th></tr></thead>
+      <tbody>
+        <% f.days.each do |d| %>
+          <tr class="border-t border-tertiary<%= ' font-medium' if d.date == low.date %>">
+            <td class="<%= tdl %> whitespace-nowrap"><%= day.(d.date) %></td>
+            <td class="<%= td %>"><%= usd.(d.balance, 2) %></td>
+            <td class="<%= td %> text-secondary"><%= usd.(d.balance_high, 2) %></td>
+            <td class="text-xs text-secondary px-2 py-1"><%= d.events.map { |e| "#{e.name} #{signed.(e.amount)}" }.join("; ") %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </details>
+</div>

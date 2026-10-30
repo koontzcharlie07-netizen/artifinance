@@ -1,0 +1,85 @@
+<% content_for :title, t(".title") %>
+<%= render "pages/legal_styles" %>
+
+<article class="legal">
+  <div class="legal-inner">
+    <h1>Artifinance Terms of Service</h1>
+    <p class="legal-effective">Effective October 30, 2026</p>
+
+    <p class="legal-lede">These Terms are an agreement between you and Artifactory Inc. ("Artifactory," "we," or "us") and govern your use of Artifinance (the "Service"). By creating an account or using the Service, you agree to these Terms.</p>
+
+    <section class="legal-summary">
+      <h2>Summary</h2>
+      <ul>
+        <li>The Service is a personal-finance tool provided "as is." It does not constitute financial advice.</li>
+        <li>You are responsible for your Plaid account, the credentials you supply, and any fees Plaid charges you.</li>
+        <li>You may terminate at any time. We may terminate for breach, legal necessity, material risk, or discontinuance of the Service.</li>
+        <li>Our liability is limited, and these Terms are governed by the laws of the State of New York.</li>
+      </ul>
+    </section>
+
+    <h2>A. The Service</h2>
+    <p>The Service enables you to aggregate, categorize, and analyze financial accounts, including accounts connected through Plaid with Plaid credentials supplied by you or your household. Subject to these Terms, Artifactory grants you a limited, revocable, non-exclusive, non-transferable right to use the Service for personal purposes.</p>
+
+    <h2>B. Eligibility and accounts</h2>
+    <p>You must be at least 18 years of age and legally capable of entering these Terms. You shall provide accurate information, protect your credentials, and notify us promptly of unauthorized use. You are responsible for activity conducted through your account and for obtaining all authority required to connect an account, provide data, or act for a household.</p>
+
+    <h2>C. Plaid and third-party services</h2>
+    <p>Connecting a financial institution requires a Plaid account held by you or your household. You shall comply with Plaid's terms and are responsible for your Plaid plan, its limits, and its fees. You authorize Artifactory to use the Plaid credentials you supply to create and maintain connections, retrieve household data, and request revocation of connections when they are deleted.</p>
+    <p>Plaid, financial institutions, and other third-party services are governed by their own terms and policies. Artifactory does not control and is not responsible for their availability, accuracy, security, or conduct.</p>
+
+    <h2>D. No financial advice</h2>
+    <p>The Service provides information only and does not constitute financial, investment, tax, legal, or accounting advice. Balances, transactions, classifications, budgets, analyses, and forecasts may be delayed, incomplete, or inaccurate. You shall verify material information with the relevant institution or adviser before relying on it. Artifactory is not a bank, broker-dealer, investment adviser, fiduciary, money transmitter, or tax adviser.</p>
+
+    <h2>E. Your data</h2>
+    <p>As between you and Artifactory, you retain your rights in data you provide or connect. You grant Artifactory a worldwide, non-exclusive, royalty-free license to host, reproduce, process, and transmit that data solely to provide, secure, and maintain the Service and to comply with law. The license ends when the data is deleted, except to the extent retained lawfully. Our processing of personal data is governed by the <%= link_to "Privacy Policy", privacy_path %>.</p>
+
+    <h2>F. Artifactory rights</h2>
+    <p>Except for open-source components and your data, Artifactory and its licensors retain all rights in the Service, including its software, design, text, marks, and other content. No right is granted except as expressly stated in these Terms or an applicable open-source license.</p>
+
+    <h2>G. Acceptable use</h2>
+    <p>You shall not:</p>
+    <ul>
+      <li>use the Service unlawfully or connect an account you are not authorized to access;</li>
+      <li>access or attempt to access another user's or household's data without authorization;</li>
+      <li>circumvent or interfere with authentication, rate limits, bot verification, or other security measures;</li>
+      <li>introduce malicious code, create accounts by automated means, or use the Service to harm another person; or</li>
+      <li>impose an unreasonable load on, disrupt, or impair the Service.</li>
+    </ul>
+
+    <h2>H. Open-source software</h2>
+    <p>The Service is based on Sure, which is licensed under the GNU Affero General Public License, version 3. The corresponding source code is available at <%= link_to "github.com/koontzcharlie07-netizen/artifinance", "https://github.com/koontzcharlie07-netizen/artifinance", class: "underline", target: "_blank", rel: "noopener noreferrer" %>. Nothing in these Terms limits a right granted by an applicable open-source license.</p>
+
+    <h2>I. Changes to the Service or Terms</h2>
+    <p>We may modify, suspend, or discontinue the Service, in whole or in part, and will give reasonable notice where practicable. We may revise these Terms prospectively. We will give notice of a material revision by email or within the Service before it takes effect and will obtain consent where required by law. If you do not agree to revised Terms, you must stop using the Service and may delete your account before they take effect. Continued use after the effective date constitutes acceptance to the extent permitted by law.</p>
+
+    <h2>J. Termination</h2>
+    <p>You may terminate these Terms at any time by deleting your account. We may suspend or terminate access if you materially breach these Terms, if required by law, to address a material security or operational risk, or if we discontinue the Service. Where practicable, we will give notice and a reasonable opportunity to cure a remediable breach.</p>
+    <p>Upon termination, your right to use the Service ceases. Data is handled as stated in the Privacy Policy; household data may remain available to other household members. Provisions that by their nature should survive termination survive, including provisions concerning ownership, disclaimers, limitation of liability, indemnification, disputes, and general terms.</p>
+
+    <h2>K. Disclaimer of warranties</h2>
+    <p class="legal-caps">To the fullest extent permitted by law, the Service is provided "as is" and "as available," without warranties of any kind, express, implied, or statutory, including warranties of merchantability, fitness for a particular purpose, non-infringement, quiet enjoyment, and the accuracy, completeness, availability, or timeliness of data.</p>
+    <p>Artifactory does not warrant that the Service will be uninterrupted, secure, or error-free. Nothing in these Terms excludes a warranty that cannot lawfully be excluded.</p>
+
+    <h2>L. Limitation of liability</h2>
+    <p class="legal-caps">To the fullest extent permitted by law, Artifactory and its officers, directors, employees, agents, and affiliates shall not be liable for any indirect, incidental, special, consequential, exemplary, or punitive damages, or for loss of profits, revenue, goodwill, use, or data, arising out of or relating to the Service or these Terms, regardless of the theory of liability and even if advised of the possibility.</p>
+    <p class="legal-caps">To the fullest extent permitted by law, the aggregate liability of Artifactory and those persons arising out of or relating to the Service or these Terms shall not exceed the greater of the fees you paid Artifactory for the Service during the twelve months preceding the event giving rise to liability or one hundred U.S. dollars ($100).</p>
+    <p>The foregoing limitations do not apply to liability that cannot lawfully be excluded or limited. Some jurisdictions do not permit certain exclusions or limitations, in which case they apply only to the fullest extent permitted.</p>
+
+    <h2>M. Indemnification</h2>
+    <p>To the extent permitted by law, you shall indemnify and hold harmless Artifactory and its officers, directors, employees, and agents from third-party claims, losses, and reasonable expenses arising from your unlawful use of the Service, your material breach of these Terms, or data you provide that infringes another person's rights. Artifactory will give reasonable notice of a claim and may control its defense. This section does not require indemnification for Artifactory's own unlawful conduct.</p>
+
+    <h2>N. Disputes and governing law</h2>
+    <p>Before commencing a proceeding, a party shall give the other written notice describing the dispute and requested relief and allow 30 days for an informal resolution, except where immediate injunctive relief is reasonably necessary. Notice to Artifactory must be sent to privacy@artifactlabs.ai.</p>
+    <p>These Terms are governed by the laws of the State of New York, without regard to conflict-of-laws principles. Subject to any non-waivable right under applicable law, the state and federal courts located in New York County, New York have exclusive jurisdiction over disputes arising out of or relating to the Service or these Terms. Either party may bring an eligible claim in a small-claims court of competent jurisdiction.</p>
+
+    <h2>O. General</h2>
+    <p>These Terms and the Privacy Policy constitute the entire agreement between you and Artifactory concerning the Service and supersede prior agreements concerning it. If a provision is held unenforceable, it shall be enforced to the maximum permissible extent and the remainder remains effective. A failure to enforce a provision is not a waiver. You may not assign these Terms without our consent; Artifactory may assign them in connection with a merger, reorganization, financing, sale of assets, or transfer of the Service. Neither party is liable for delay or failure caused by events beyond its reasonable control. Notices may be given by email or within the Service. Headings are for convenience only.</p>
+    <p>These Terms do not limit any non-waivable consumer right or other protection afforded by applicable law.</p>
+
+    <h2>Contact</h2>
+    <p>Artifactory Inc.<br>Provider of Artifinance<br>privacy@artifactlabs.ai</p>
+
+    <p class="legal-crossref">See also the <%= link_to "Artifinance Privacy Policy", privacy_path %>.</p>
+  </div>
+</article>
