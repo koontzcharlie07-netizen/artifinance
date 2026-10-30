@@ -1,0 +1,32 @@
+<%# Bot checks for public forms; see BotProtection. %>
+<div aria-hidden="true" style="position:absolute;left:-10000px;top:auto;width:1px;height:1px;overflow:hidden">
+  <label for="<%= BotProtection::HONEYPOT_FIELD %>">Leave this field empty</label>
+  <input type="text" name="<%= BotProtection::HONEYPOT_FIELD %>" id="<%= BotProtection::HONEYPOT_FIELD %>" value="" tabindex="-1" autocomplete="off">
+</div>
+<input type="hidden" name="form_token" value="<%= bot_protection_form_token %>">
+<% if turnstile_site_key %>
+  <div class="cf-turnstile" data-sitekey="<%= turnstile_site_key %>" data-testid="turnstile"></div>
+  <%# Rendered explicitly so it also appears after Turbo navigations, where
+      Turnstile's automatic scan of the page doesn't run again. %>
+  <script>
+    (function () {
+      function renderTurnstile() {
+        if (!window.turnstile) return;
+        document.querySelectorAll(".cf-turnstile:not([data-rendered])").forEach(function (el) {
+          el.setAttribute("data-rendered", "1");
+          window.turnstile.render(el);
+        });
+      }
+      window.artifinanceRenderTurnstile = renderTurnstile;
+      if (window.turnstile) {
+        renderTurnstile();
+      } else if (!document.querySelector("script[data-turnstile-api]")) {
+        var script = document.createElement("script");
+        script.src = "https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit&onload=artifinanceRenderTurnstile";
+        script.async = true;
+        script.setAttribute("data-turnstile-api", "");
+        document.head.appendChild(script);
+      }
+    })();
+  </script>
+<% end %>

@@ -1,0 +1,36 @@
+<%# Self-contained typography for the legal pages, so they read the same on the
+    site and when exported as standalone files. %>
+<style>
+  /* The app shell fixes body to the viewport height with overflow hidden and
+     scrolls inner panes instead. Legal pages are plain documents, so let the
+     page itself scroll. This partial is only rendered on the legal pages. */
+  html, body { height: auto !important; min-height: 100%; margin: 0; overflow-y: auto !important; overscroll-behavior: auto; }
+  .legal, .legal *, .legal *::before, .legal *::after { box-sizing: border-box; }
+  .legal { --legal-ink: #1d1d1f; --legal-muted: #6e6e73; --legal-rule: #d2d2d7; --legal-link: #0066cc;
+           color: var(--legal-ink); background: #fff;
+           font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Helvetica, Arial, sans-serif;
+           font-size: 17px; line-height: 1.53; letter-spacing: -0.01em; font-weight: 400;
+           -webkit-font-smoothing: antialiased; }
+  .legal-inner { max-width: 692px; margin: 0 auto; padding: 88px 24px 120px; }
+  .legal h1 { font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Helvetica Neue", Helvetica, Arial, sans-serif;
+              font-size: 48px; line-height: 1.08; font-weight: 600; letter-spacing: -0.02em; margin: 0 0 12px; }
+  .legal .legal-effective { color: var(--legal-muted); font-size: 14px; margin: 0 0 40px; }
+  .legal .legal-lede { font-size: 21px; line-height: 1.43; margin: 0 0 32px; }
+  .legal .legal-summary { border-top: 1px solid var(--legal-rule); border-bottom: 1px solid var(--legal-rule); padding: 28px 0 24px; margin: 0 0 16px; }
+  .legal .legal-summary h2 { margin-top: 0; font-size: 21px; }
+  .legal h2 { font-size: 28px; line-height: 1.14; font-weight: 600; letter-spacing: -0.015em; margin: 56px 0 16px; }
+  .legal h3 { font-size: 17px; font-weight: 600; margin: 28px 0 8px; }
+  .legal p { margin: 0 0 16px; }
+  .legal ul { margin: 0 0 16px; padding-left: 22px; list-style: disc outside; }
+  .legal li { margin: 0 0 8px; }
+  .legal a { color: var(--legal-link); text-decoration: none; }
+  .legal a:hover { text-decoration: underline; }
+  .legal .legal-caps { text-transform: uppercase; font-size: 15px; letter-spacing: 0; }
+  .legal .legal-crossref { margin-top: 64px; padding-top: 20px; border-top: 1px solid var(--legal-rule); color: var(--legal-muted); font-size: 14px; }
+  @media (max-width: 734px) {
+    .legal-inner { padding: 56px 20px 88px; }
+    .legal h1 { font-size: 36px; }
+    .legal .legal-lede { font-size: 19px; }
+    .legal h2 { font-size: 24px; margin-top: 44px; }
+  }
+</style>

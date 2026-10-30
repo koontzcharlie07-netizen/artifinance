@@ -1,0 +1,160 @@
+<%
+  usd = ->(v, digits = 0) { v.nil? ? "–" : number_to_currency(v, precision: digits) }
+  pct = ->(v) { v.nil? ? "–" : number_to_percentage(v * 100, precision: 0) }
+  mon = ->(m) { m.strftime("%b %Y") }
+  k = @kpi
+  card = "bg-container rounded-xl shadow-border-xs p-4"
+  th = "text-left text-xs font-medium text-secondary px-2 py-1 whitespace-nowrap"
+  td = "text-right text-sm text-primary px-2 py-1 whitespace-nowrap tabular-nums"
+  tdl = "text-left text-sm text-primary px-2 py-1 whitespace-nowrap"
+%>
+<% content_for :page_header do %>
+  <div class="space-y-1 mb-6">
+    <h1 class="text-xl lg:text-3xl font-medium text-primary">Velocity</h1>
+    <p class="text-sm text-secondary">
+      Whether you're spending above your means, judged on a normal month at your current pay (assumes your paychecks
+      continue), and how money actually moved through your checking accounts month by month.
+      Rent counts at your share everywhere in <%= product_name %>: each rent payment is split into your share and your roommate's, and the roommate's part and their Venmo are recorded as transfers.
+    </p>
+  </div>
+<% end %>
+<% nm = k[:nm]; badge = ->(ok) { ok ? %(<span class="mf-badge mf-ok">Verified</span>).html_safe : %(<span class="mf-badge mf-inf">Inferred</span>).html_safe } %>
+<style>
+  .mf-badge { font-size: 11px; border-radius: 9999px; padding: 1px 7px; white-space: nowrap; border: 1px solid currentColor; }
+  .mf-ok { color: #0a7f0a; } .mf-inf { color: #a15c00; }
+  html[data-theme="dark"] .mf-ok { color: #4cc24c; } html[data-theme="dark"] .mf-inf { color: #f0a841; }
+</style>
+
+<div class="space-y-6 pb-12">
+  <div class="<%= card %>" style="border-left: 4px solid <%= k[:above_means] ? '#d03b3b' : '#0ca30c' %>">
+    <p class="text-lg font-medium text-primary">
+      <% if k[:above_means] %>
+        ⚠ Above your means: a normal month at your current pay comes out <%= usd.(-nm[:left]) %> short of <%= usd.(nm[:take_home]) %> take-home.
+      <% else %>
+        ✓ Within your means: a normal month leaves <%= usd.(nm[:left]) %> of <%= usd.(nm[:take_home]) %> take-home (<%= pct.(nm[:savings_rate]) %> savings rate).
+      <% end %>
+    </p>
+    <p class="text-sm text-secondary mt-1">
+      At the higher card-spending rate (what you've actually paid Apple per month lately) it's <%= usd.(nm[:left_high]) %> a month.
+      One-off purchases in the last 90 days, set aside: <%= usd.(nm[:one_offs]) %>, about <%= nm[:left].positive? ? "#{(nm[:one_offs] / nm[:left]).round} months" : "–" %> of a normal month's surplus.
+      <%= link_to "Day-by-day forecast →", "/forecast", class: "underline" %>
+    </p>
+  </div>
+
+  <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+    <% [
+      ["Take-home pay", usd.(nm[:take_home]), "per month: your paychecks as they arrive now"],
+      ["Your costs", usd.(nm[:out]), "per month: rent share, bills, cards, everyday"],
+      ["Left over", usd.(nm[:left]), "per month, in a normal month"],
+      ["Savings rate on take-home", pct.(nm[:savings_rate]), "left over ÷ take-home pay"],
+      ["Cash now", usd.(@cash_now), "checking accounts"],
+      ["Runway, income continues", k[:runway_with_income] ? "#{k[:runway_with_income].round(1)} months" : "not burning", k[:runway_with_income] ? "cash now ÷ monthly shortfall" : "pay covers a normal month"],
+      ["Runway, no income", k[:runway_no_income] ? "#{k[:runway_no_income].round(1)} months" : "–", "cash now ÷ your monthly costs"],
+      ["Rent, your share", usd.(nm[:rent_share]), nm[:roommate].to_d.positive? ? "#{usd.(nm[:rent])} rent − #{usd.(nm[:roommate])} roommate Venmo" : "no roommate share found"],
+      ["Card balances", usd.(@card_debt), "cards in #{product_name} (Discover, Apple Card)"],
+      ["Velocity", k[:turnover] ? "#{k[:turnover].round(2)}× / month" : "–", "money out ÷ average cash, last 3 full months"],
+      ["Days a dollar stays", k[:days_held] ? "#{k[:days_held].round} days" : "–", "average cash ÷ daily money out"],
+      ["Spending, last 3 months", usd.(k[:spending]), "actual, per month, all accounts, rent at your share"]
+    ].each do |label, value, hint| %>
+      <div class="<%= card %>">
+        <p class="text-xs text-secondary"><%= label %></p>
+        <p class="text-xl font-medium text-primary tabular-nums"><%= value %></p>
+        <p class="text-xs text-subdued"><%= hint %></p>
+      </div>
+    <% end %>
+  </div>
+
+  <div class="<%= card %> overflow-x-auto">
+    <h2 class="text-base font-medium text-primary mb-2">A normal month at your current pay</h2>
+    <table class="w-full">
+      <tbody>
+        <% rows = [["Take-home pay", nm[:take_home], true, "paychecks as they arrive now"],
+                   ["Rent, your share", -nm[:rent_share], false, "rent minus your roommate's Venmo: the Venmo pattern is in the data, that it's your roommate's share is your figure"],
+                   ["Recurring bills and subscriptions", -nm[:bills], true, @forecast.recurring.map { |r| "#{r[:name]} #{usd.(r[:amount], 2)}" }.join(", ")]] +
+                  nm[:cards].map { |name, v| ["#{name} everyday spending", -v, false, "recent typical rate, one-offs left out" + (name =~ /apple/i ? "; includes its subscriptions" : "")] } +
+                  [["Checking everyday spending", -nm[:everyday], false, "debit purchases and one-off Venmo, recent typical rate"]] %>
+        <% rows.each do |label, v, ok, note| %>
+          <tr class="border-t border-tertiary">
+            <td class="<%= tdl %>"><%= label %></td>
+            <td class="<%= td %>"><%= usd.(v) %></td>
+            <td class="px-2 py-1"><%= badge.(ok) %></td>
+            <td class="text-xs text-secondary px-2 py-1"><%= note %></td>
+          </tr>
+        <% end %>
+        <tr class="border-t border-tertiary font-medium">
+          <td class="<%= tdl %>">Left over (savings rate <%= pct.(nm[:savings_rate]) %>)</td><td class="<%= td %>"><%= usd.(nm[:left]) %></td><td></td>
+          <td class="text-xs text-secondary px-2 py-1">at the higher card rate: <%= usd.(nm[:left_high]) %></td>
+        </tr>
+      </tbody>
+    </table>
+    <p class="text-xs text-subdued mt-2">Card purchases count when you make them and card payments don't count, so nothing is counted twice. Every assumption is listed on the <%= link_to "Forecast", "/forecast", class: "underline" %> page.</p>
+  </div>
+
+  <div class="<%= card %> overflow-x-auto">
+    <h2 class="text-base font-medium text-primary mb-2">Month by month, as it happened</h2>
+    <% max = @months.map { |m| [@cash[m][:money_in], @cash[m][:money_out]].max }.max.to_f.nonzero? || 1 %>
+    <table class="w-full">
+      <thead><tr>
+        <th class="<%= th %>">Month</th><th class="<%= th %>">Money in</th><th class="<%= th %>">of which pay</th>
+        <th class="<%= th %>">Money out</th><th class="<%= th %>">of which card payments</th><th class="<%= th %>">Net</th>
+        <th class="<%= th %>">Savings rate on pay</th><th class="<%= th %>">Spending (all accounts)</th><th class="<%= th %>">vs last month</th>
+        <th class="<%= th %>" style="min-width:160px">in / out</th>
+      </tr></thead>
+      <tbody>
+        <% @months.reverse.each_with_index do |m, i| c = @cash[m]; net = c[:money_in] - c[:money_out]
+           prev = @spend_by_month[m << 1]; spend = @spend_by_month[m] %>
+          <tr class="border-t border-tertiary">
+            <td class="<%= tdl %>"><%= mon.(m) %><%= " (so far)" if i.zero? %></td>
+            <td class="<%= td %>"><%= usd.(c[:money_in]) %></td>
+            <td class="<%= td %> text-secondary"><%= usd.(c[:income]) %></td>
+            <td class="<%= td %>"><%= usd.(c[:money_out]) %></td>
+            <td class="<%= td %> text-secondary"><%= usd.(c[:card_payments]) %></td>
+            <td class="<%= td %>" style="color: <%= net.negative? ? '#d03b3b' : '#0ca30c' %>"><%= usd.(net) %></td>
+            <td class="<%= td %>"><%= c[:income] >= 1000 ? pct.(net / c[:income]) : "–" %></td>
+            <td class="<%= td %>"><%= usd.(spend) %></td>
+            <td class="<%= td %> text-secondary"><%= prev && prev.nonzero? ? number_to_percentage((spend - prev) / prev * 100, precision: 0, format: "%n%").sub(/\A(?!-)/, "+") : "–" %></td>
+            <td class="px-2 py-1">
+              <div style="height:6px;background:#0ca30c;border-radius:3px;width:<%= (c[:money_in].clamp(0, max) / max * 100).round(1) %>%"></div>
+              <div style="height:6px;background:#d03b3b;border-radius:3px;margin-top:2px;width:<%= (c[:money_out].clamp(0, max) / max * 100).round(1) %>%"></div>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+    <p class="text-xs text-subdued mt-2">
+      Money in/out: checking only, moves between your accounts left out, and the roommate's share of rent and their
+      Venmo left out (recorded as transfers). Card payments are money out (that's when card spending leaves your cash),
+      including cards not in <%= product_name %>. Savings rate on pay: net ÷ pay that month (blank when there was little or no pay).
+      Spending: purchases minus refunds on every account, rent at your share; transfers and card payments left out.
+    </p>
+  </div>
+
+  <% [["Spending by category", @categories], ["Top merchants", @merchants]].each do |title, list| %>
+    <div class="<%= card %> overflow-x-auto">
+      <h2 class="text-base font-medium text-primary mb-2"><%= title %> (net of refunds)</h2>
+      <table class="w-full">
+        <thead><tr>
+          <th class="<%= th %>"><%= title.include?("merchant") ? "Merchant" : "Category" %></th>
+          <% @months.last(7).each do |m| %><th class="<%= th %> text-right"><%= mon.(m) %></th><% end %>
+          <th class="<%= th %> text-right">last 12 full months</th><th class="<%= th %> text-right">per month</th>
+        </tr></thead>
+        <tbody>
+          <% list.each do |row| %>
+            <tr class="border-t border-tertiary">
+              <td class="<%= tdl %>"><%= row[:name].to_s.truncate(32) %></td>
+              <% @months.last(7).each do |m| %><td class="<%= td %>"><%= row[:months][m] ? usd.(row[:months][m]) : "" %></td><% end %>
+              <td class="<%= td %> font-medium"><%= usd.(row[:total]) %></td>
+              <td class="<%= td %> text-secondary"><%= usd.(row[:total] / @full_months.size) %></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  <% end %>
+
+  <p class="text-xs text-subdued">
+    Recurring charges and subscriptions: <%= link_to "Recurring", "/recurring_transactions", class: "underline" %>.
+    Built-in charts: <%= link_to "Dashboard", root_path, class: "underline" %> (net worth, cash flow) and
+    <%= link_to "Reports", "/reports", class: "underline" %> (income vs expenses, trends, budgets).
+  </p>
+</div>

@@ -1,0 +1,26 @@
+Artifinance
+===========
+
+Artifinance is a fork of Sure (https://github.com/we-promise/sure), based on Sure v0.7.5-hotfix.3.
+Sure is itself a community fork of Maybe Finance (https://github.com/maybe-finance/maybe).
+
+Artifinance is not affiliated with or endorsed by Maybe Finance Inc. or by the Sure project.
+
+Copyright notices
+- Maybe Finance: Copyright (C) Maybe Finance Inc. and contributors.
+- Sure: Copyright (C) the Sure contributors (we-promise/sure).
+- Changes made for Artifinance: Copyright (C) Charles Koontz.
+
+License
+Artifinance, like Sure and Maybe Finance, is licensed under the GNU Affero General Public License,
+version 3 (see LICENSE). If you run a modified version for other people over a network, the AGPL
+requires you to offer them the complete corresponding source code of that version, including these
+changes. The full history of every change made for Artifinance is in this repository's git log.
+
+What Artifinance changes
+- Name, logo, favicon, app icons and PWA manifest (Artifinance branding).
+- Forecast and Velocity pages, linked in the sidebar.
+- Rent split: a shared rent payment counts at your share, with your roommate's Venmo recorded as a transfer.
+- Plaid: only the products each item already uses are requested; deleting a bank in the app doesn't
+  remove the Plaid item (it is shared with another local app).
+- Scripts used by the local `money` command (artifinance/runner), available in the image at /money.

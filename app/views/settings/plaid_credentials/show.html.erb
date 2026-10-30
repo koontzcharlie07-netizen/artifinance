@@ -1,0 +1,120 @@
+<%= content_for :page_title, t(".page_title") %>
+
+<%= settings_section title: t(".keys_title"), subtitle: t(".keys_subtitle") do %>
+  <div class="space-y-4">
+    <% unless FamilyPlaidCredential.storage_available? %>
+      <%= render DS::Alert.new(message: t(".encryption_missing"), variant: :error) %>
+    <% end %>
+
+    <% if @credential.persisted? %>
+      <dl class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-sm">
+        <div class="bg-surface-inset rounded-lg p-3">
+          <dt class="text-secondary"><%= t(".client_id") %></dt>
+          <dd class="font-mono text-primary" data-testid="client-id-last4"><%= t(".ending_in", last4: @credential.client_id_last4) %></dd>
+        </div>
+        <div class="bg-surface-inset rounded-lg p-3">
+          <dt class="text-secondary"><%= t(".secret") %></dt>
+          <dd class="font-mono text-primary" data-testid="secret-last4"><%= t(".ending_in", last4: @credential.secret_last4) %></dd>
+        </div>
+        <div class="bg-surface-inset rounded-lg p-3">
+          <dt class="text-secondary"><%= t(".environment") %></dt>
+          <dd class="text-primary"><%= t(".environments.#{@credential.environment}") %></dd>
+        </div>
+      </dl>
+    <% else %>
+      <p class="text-sm text-secondary" data-testid="plaid-keys-none-saved"><%= t(".none_saved") %></p>
+    <% end %>
+
+    <% if Current.family.plaid_instance_keys_allowed? %>
+      <p class="text-xs text-secondary"><%= t(".instance_allowed") %></p>
+    <% end %>
+
+    <% if @credential.errors.any? %>
+      <div data-testid="plaid-keys-error">
+        <%= render DS::Alert.new(message: @credential.errors.full_messages.to_sentence, variant: :error) %>
+      </div>
+    <% end %>
+
+    <%= styled_form_with model: @credential, url: settings_plaid_credential_path, method: :patch, class: "space-y-4" do |form| %>
+      <%= form.text_field :client_id,
+          value: "",
+          autocomplete: "off",
+          label: t(".client_id"),
+          placeholder: @credential.persisted? ? t(".keep_saved") : "",
+          required: !@credential.persisted? %>
+      <%= form.password_field :secret,
+          value: "",
+          autocomplete: "new-password",
+          label: t(".secret"),
+          placeholder: @credential.persisted? ? t(".keep_saved") : "",
+          required: !@credential.persisted? %>
+      <%= form.select :environment,
+          FamilyPlaidCredential::ENVIRONMENTS.map { |env| [ t(".environments.#{env}"), env ] },
+          { label: t(".environment") } %>
+      <p class="text-xs text-secondary"><%= t(".relink_hint") %></p>
+      <% if @items_on_family_keys.positive? %>
+        <div class="rounded-lg bg-surface-inset p-3 space-y-2">
+          <p class="text-xs text-secondary"><%= t(".switch_warning") %></p>
+          <label class="flex items-center gap-2 text-sm text-primary">
+            <%= check_box_tag :confirm_relink, "1", false, id: "confirm_relink" %>
+            <%= t(".confirm_relink", count: @relink_required || @items_on_family_keys) %>
+          </label>
+        </div>
+      <% end %>
+      <%= form.submit t(".save") %>
+    <% end %>
+  </div>
+<% end %>
+
+<%= settings_section title: t(".usage_title"), subtitle: t(".usage_subtitle") do %>
+  <ul class="text-sm text-primary space-y-1">
+    <li><%= t(".new_links", source: t(".sources.#{Current.family.plaid_credential_source || "none"}")) %></li>
+    <li><%= t(".items_on_family_keys", count: @items_on_family_keys) %></li>
+    <li><%= t(".items_on_instance_keys", count: @items_on_instance_keys) %></li>
+  </ul>
+
+  <% if @credential.persisted? %>
+    <div class="mt-4 flex justify-end">
+      <%= render DS::Button.new(
+        text: t(".remove"),
+        variant: "destructive",
+        href: settings_plaid_credential_path,
+        method: :delete,
+        data: { turbo_confirm: t(".remove_confirmation") }
+      ) %>
+    </div>
+  <% end %>
+<% end %>
+
+<%= settings_section title: t(".guide.title"), subtitle: t(".guide.subtitle") do %>
+  <div class="space-y-4 text-sm text-primary" id="plaid-setup-guide">
+    <div>
+      <p class="font-medium"><%= t(".guide.step1_title") %></p>
+      <p class="text-secondary"><%= t(".guide.step1_body") %>
+        <%= link_to "dashboard.plaid.com/signup", "https://dashboard.plaid.com/signup", target: "_blank", rel: "noopener", class: "underline" %></p>
+    </div>
+    <div>
+      <p class="font-medium"><%= t(".guide.step2_title") %></p>
+      <p class="text-secondary"><%= t(".guide.step2_body") %>
+        <%= link_to "dashboard.plaid.com/developers/keys", "https://dashboard.plaid.com/developers/keys", target: "_blank", rel: "noopener", class: "underline" %></p>
+    </div>
+    <div>
+      <p class="font-medium"><%= t(".guide.step3_title") %></p>
+      <p class="text-secondary"><%= t(".guide.step3_body") %>
+        <%= link_to "dashboard.plaid.com/developers/api", "https://dashboard.plaid.com/developers/api", target: "_blank", rel: "noopener", class: "underline" %></p>
+      <code class="mt-2 block font-mono text-xs bg-surface-inset rounded-lg p-3 select-all" data-testid="plaid-redirect-uri"><%= plaid_redirect_uri %></code>
+    </div>
+    <div>
+      <p class="font-medium"><%= t(".guide.step4_title") %></p>
+      <p class="text-secondary"><%= t(".guide.step4_body") %></p>
+    </div>
+    <div class="rounded-lg bg-surface-inset p-3 space-y-2">
+      <p class="font-medium"><%= t(".guide.environments_title") %></p>
+      <p class="text-secondary"><%= t(".guide.sandbox_body") %></p>
+      <p class="text-secondary"><%= t(".guide.production_body") %></p>
+      <p class="text-secondary"><%= t(".guide.trial_body") %></p>
+      <p class="text-secondary"><%= t(".guide.limited_body") %></p>
+    </div>
+    <p class="text-xs text-secondary"><%= t(".guide.privacy_note") %></p>
+  </div>
+<% end %>

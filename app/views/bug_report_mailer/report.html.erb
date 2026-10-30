@@ -1,0 +1,23 @@
+<h1><%= t("bug_report_mailer.report.heading", product_name: product_name) %></h1>
+
+<p><strong><%= t("bug_report_mailer.report.what_happened") %></strong></p>
+<%= simple_format(@what_happened) %>
+
+<table class="email-table">
+  <tr>
+    <th><%= t("bug_report_mailer.report.page_url") %></th>
+    <td><%= link_to @page_url, @page_url %></td>
+  </tr>
+  <tr>
+    <th><%= t("bug_report_mailer.report.browser") %></th>
+    <td><%= @browser %></td>
+  </tr>
+  <tr>
+    <th><%= t("bug_report_mailer.report.reported_at") %></th>
+    <td><%= @reported_at.iso8601 %></td>
+  </tr>
+  <tr>
+    <th><%= t("bug_report_mailer.report.user_id") %></th>
+    <td><%= @reporter_id %></td>
+  </tr>
+</table>

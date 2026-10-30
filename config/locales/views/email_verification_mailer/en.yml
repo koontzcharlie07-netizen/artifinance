@@ -1,0 +1,10 @@
+---
+en:
+  email_verification_mailer:
+    verification_email:
+      subject: Verify your email for %{product_name}
+      greeting: Welcome!
+      body: Click the button below to verify your email address and finish creating your %{product_name} account.
+      cta: Verify email
+      expiry_notice: This link expires in %{days} days.
+      ignore_notice: If you didn't sign up, you can ignore this email; the account stays locked.

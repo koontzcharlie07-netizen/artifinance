@@ -1,0 +1,12 @@
+---
+en:
+  activerecord:
+    errors:
+      models:
+        rule:
+          min_actions: "must have at least one action"
+          duplicate_actions: "Rule cannot have duplicate actions %{types}"
+          nested_conditions: "Compound conditions cannot be nested"
+  rule:
+    conditions:
+      unsupported_label: "Unsupported (%{type})"
