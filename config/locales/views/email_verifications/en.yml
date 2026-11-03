@@ -1,0 +1,15 @@
+---
+en:
+  email_verifications:
+    show:
+      title: Check your email
+      sent_to: We sent a verification link to
+      body: Click the link in that email to finish creating your account. It can take a minute to arrive; check your spam folder too.
+      resend: Send the link again
+      sign_out: Sign out
+    create:
+      sent: Verification email sent.
+    verify:
+      verified: Email verified. Welcome!
+      verified_sign_in: Email verified. Sign in to continue.
+      invalid_token: That verification link is invalid or has expired. Sign in to get a new one.

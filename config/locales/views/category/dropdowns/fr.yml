@@ -1,0 +1,12 @@
+---
+fr:
+  category:
+    dropdowns:
+      row:
+        delete: Supprimer la catégorie
+        edit: Éditer la catégorie
+      show:
+        clear: Effacer la catégorie
+        no_categories: Aucune catégorie trouvée
+        recent: Récents
+        search_placeholder: Rechercher

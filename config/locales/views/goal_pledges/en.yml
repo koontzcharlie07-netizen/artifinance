@@ -1,0 +1,20 @@
+---
+en:
+  goal_pledges:
+    new:
+      helper_transfer: PRIVATE_PRODUCT_NAME will look for a matching deposit in your linked account. The pledge stays pending for 7 days, then auto-confirms once PRIVATE_PRODUCT_NAME spots it.
+      helper_manual: PRIVATE_PRODUCT_NAME will record this on your next manual balance edit and confirm the contribution.
+      amount_label: Amount
+      account_label: Into account
+      submit: Record pledge
+      preview_zero: "Currently {current} of {target} saved."
+      preview_nonzero: "Reaches {percent}%, {newTotal} of {target}."
+      preview_reached: "Hits your {target} target. Goal reached."
+    create:
+      success: Pledge recorded. PRIVATE_PRODUCT_NAME will confirm it on the next sync.
+    renew:
+      success: Pledge window extended 7 days.
+      not_open: Only open pledges can be extended.
+    destroy:
+      success: Pledge cancelled.
+      not_open: Only open pledges can be cancelled.

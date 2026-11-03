@@ -1,0 +1,17 @@
+<%= content_for :page_title, t(".title") %>
+
+<div class="bg-container shadow-border-xs rounded-xl p-4">
+  <h2 class="text-lg font-medium text-primary mb-1"><%= t(".heading") %></h2>
+  <p class="text-sm text-secondary mb-4"><%= t(".description") %></p>
+  <div class="flex flex-col md:flex-row gap-4">
+    <%= link_to new_bug_report_path, class: "w-full md:w-1/2 flex flex-col items-center p-4 border border-secondary rounded-xl hover:bg-container-hover" do %>
+      <div class="mb-2"><%= icon("lightbulb", size: "lg") %></div>
+      <span class="text-sm font-medium text-primary text-center"><%= t(".feature_request") %></span>
+    <% end %>
+
+    <%= link_to new_bug_report_path, class: "w-full md:w-1/2 flex flex-col items-center p-4 border border-secondary rounded-xl hover:bg-container-hover" do %>
+      <div class="mb-2"><%= icon("bug", size: "lg") %></div>
+      <span class="text-sm font-medium text-primary text-center"><%= t(".bug_report") %></span>
+    <% end %>
+  </div>
+</div>

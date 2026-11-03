@@ -1,0 +1,19 @@
+<%# Banks Plaid can't reach until their owner signs in again; nothing new arrives until then. %>
+<% items = Current.family.plaid_items.active.requires_update.select { |item| item.manageable_by?(Current.user) && !item.credentials_stale? } %>
+<% items.each do |item| %>
+  <div class="mb-4 flex flex-col gap-3 rounded-xl bg-warning/10 p-4 md:flex-row md:items-center md:justify-between" data-testid="reconnect-bank">
+    <div class="flex items-start gap-3">
+      <%= icon "alert-triangle", color: "warning" %>
+      <div>
+        <p class="font-medium text-primary"><%= t("pages.dashboard.reconnect_banks.title", bank: item.name) %></p>
+        <p class="text-sm text-secondary"><%= t("pages.dashboard.reconnect_banks.body", bank: item.name) %></p>
+      </div>
+    </div>
+    <%= render DS::Link.new(
+      text: t("pages.dashboard.reconnect_banks.button", bank: item.name),
+      icon: "refresh-cw",
+      href: edit_plaid_item_path(item),
+      frame: :modal
+    ) %>
+  </div>
+<% end %>

@@ -1,0 +1,12 @@
+<%
+  header_title t(".title")
+%>
+
+<div class="space-y-4 text-sm" data-testid="email-verification-pending">
+  <p class="text-secondary"><%= t(".sent_to") %> <span class="font-medium text-primary"><%= @email %></span></p>
+  <p class="text-secondary"><%= t(".body") %></p>
+
+  <%= button_to t(".resend"), email_verification_path, method: :post, class: "w-full inline-flex items-center justify-center rounded-lg px-3 py-2 text-sm font-medium bg-inverse text-inverse hover:bg-inverse-hover" %>
+
+  <%= button_to t(".sign_out"), session_path(Current.session), method: :delete, class: "w-full inline-flex items-center justify-center rounded-lg px-3 py-2 text-sm font-medium text-secondary hover:bg-surface-hover" %>
+</div>

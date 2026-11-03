@@ -1,0 +1,6 @@
+---
+en:
+  apple_card_imports:
+    create:
+      no_files: Choose one or more Apple Card statement files.
+      too_large: "file is too large (5 MB max)"

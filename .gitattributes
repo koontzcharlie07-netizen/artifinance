@@ -1,0 +1,6 @@
+db/schema.rb linguist-generated
+app/assets/tailwind/sure-design-system/_generated.css linguist-generated
+vendor/* linguist-vendored
+bin/* text eol=lf
+*.sh text eol=lf
+*.rb text eol=lf

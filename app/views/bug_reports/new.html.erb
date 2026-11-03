@@ -1,0 +1,36 @@
+<% content_for :title, t(".title") %>
+<% header_title t(".title") %>
+
+<div class="max-w-xl mx-auto py-8 space-y-6">
+  <div class="space-y-2">
+    <h1 class="text-2xl font-medium text-primary"><%= t(".title") %></h1>
+    <p class="text-secondary"><%= t(".description") %></p>
+  </div>
+
+  <% if @bug_report.errors.present? %>
+    <%= render DS::Alert.new(
+      message: @bug_report.errors.full_messages.to_sentence,
+      variant: :error,
+      live: :alert
+    ) %>
+  <% end %>
+
+  <%= styled_form_with model: @bug_report, url: bug_report_path, class: "space-y-5", multipart: true do |form| %>
+    <%= form.text_area :what_happened,
+        rows: 6,
+        required: true,
+        maxlength: 4_000,
+        label: true,
+        placeholder: t(".what_happened_placeholder") %>
+
+    <%= form.file_field :screenshot,
+        accept: @bug_report.accepted_content_types.join(","),
+        label: true %>
+    <p class="text-sm text-secondary"><%= t(".screenshot_hint") %></p>
+
+    <%= form.hidden_field :page_url %>
+    <%= form.submit t(".submit") %>
+  <% end %>
+
+  <p class="text-sm text-secondary"><%= t(".automatic_details") %></p>
+</div>

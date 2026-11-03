@@ -1,0 +1,17 @@
+Artifinance
+===========
+
+Artifinance is based on Sure v0.7.5-hotfix.3
+(https://github.com/we-promise/sure). Sure is a community fork of Maybe
+Finance (https://github.com/maybe-finance/maybe).
+
+Artifinance is not affiliated with or endorsed by Maybe Finance Inc. or by the
+Sure project.
+
+Copyright notices
+- Maybe Finance: Copyright (C) Maybe Finance Inc. and contributors.
+- Sure: Copyright (C) the Sure contributors (we-promise/sure).
+- Artifinance changes: Copyright (C) Charles Koontz.
+
+Artifinance, Sure, and Maybe Finance are distributed under the GNU Affero
+General Public License version 3. See LICENSE.

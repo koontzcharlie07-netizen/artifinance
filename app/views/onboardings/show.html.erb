@@ -1,0 +1,135 @@
+<%= content_for :prev_nav do %>
+  <%= image_tag private_asset_path("logomark.png", v: ArtifinancePresentation.asset_version), class: "w-10 h-10" %>
+<% end %>
+
+<%= content_for :cancel_action do %>
+  <%= render "onboardings/logout" %>
+<% end %>
+
+<div class="grow max-w-lg w-full mx-auto flex flex-col gap-6 px-4 md:px-0" data-testid="onboarding-connect">
+  <div class="space-y-1 text-center">
+    <h1 class="text-2xl font-medium"><%= t(".title") %></h1>
+    <p class="text-secondary text-sm"><%= t(".subtitle") %></p>
+  </div>
+
+  <%= render DS::Card.new(class: "gap-5", data: { testid: "onboarding-plaid" }) do %>
+    <div class="flex items-start gap-3">
+      <%= icon("landmark", size: "lg") %>
+      <div>
+        <h2 class="text-lg font-medium text-primary"><%= t(".plaid_title") %></h2>
+        <p class="text-sm text-secondary"><%= t(".plaid_subtitle") %></p>
+      </div>
+    </div>
+
+    <% if @can_link_plaid %>
+      <%= render DS::Link.new(
+        text: t(".connect"),
+        icon: "link",
+        size: :lg,
+        href: new_plaid_item_path(region: "us", accountable_type: "Depository"),
+        frame: :modal,
+        full_width: true,
+        data: { testid: "onboarding-connect-plaid" }
+      ) %>
+    <% elsif @plaid_keys_editable %>
+      <ol class="space-y-5" data-testid="onboarding-plaid-keys">
+        <li class="flex gap-3">
+          <span class="shrink-0 w-8 h-8 rounded-full bg-inverse text-inverse font-medium flex items-center justify-center">1</span>
+          <div class="grow space-y-2">
+            <h3 class="text-base font-medium text-primary"><%= t(".step1_title") %></h3>
+            <p class="text-sm text-secondary"><%= t(".step1_body") %></p>
+            <%= render DS::Link.new(
+              text: t(".step1_button"),
+              icon: "external-link",
+              icon_position: :right,
+              size: :lg,
+              href: "https://dashboard.plaid.com/developers/keys",
+              target: "_blank",
+              full_width: true,
+              data: { testid: "onboarding-open-plaid-keys" }
+            ) %>
+            <%= link_to t(".step1_signup"), "https://dashboard.plaid.com/signup", target: "_blank", rel: "noopener noreferrer", class: "text-sm text-link underline" %>
+          </div>
+        </li>
+
+        <li class="flex gap-3">
+          <span class="shrink-0 w-8 h-8 rounded-full bg-inverse text-inverse font-medium flex items-center justify-center">2</span>
+          <div class="grow space-y-2">
+            <h3 class="text-base font-medium text-primary"><%= t(".step2_title") %></h3>
+            <p class="text-sm text-secondary"><%= t(".step2_body_html") %></p>
+            <figure class="rounded-lg border border-secondary bg-surface-inset p-3 text-xs" role="img" aria-label="<%= t(".picture_alt") %>" data-testid="onboarding-plaid-picture">
+              <div class="flex gap-3">
+                <div class="w-24 shrink-0 space-y-1 text-secondary">
+                  <p><%= t(".picture_menu_developers") %></p>
+                  <p class="rounded bg-container px-2 py-1 font-medium text-primary shadow-border-xs">→ <%= t(".picture_menu_keys") %></p>
+                </div>
+                <div class="grow space-y-2">
+                  <div class="flex items-center justify-between rounded bg-container px-2 py-1.5 shadow-border-xs">
+                    <span class="font-mono text-primary"><%= t(".picture_client_id") %> ••••••</span>
+                    <span class="inline-flex items-center gap-1 rounded border border-primary px-1.5 font-medium text-primary"><%= icon("copy", size: "xs") %> <%= t(".picture_copy") %></span>
+                  </div>
+                  <div class="flex items-center justify-between rounded bg-container px-2 py-1.5 shadow-border-xs">
+                    <span class="font-mono text-primary"><%= t(".picture_secret") %> ••••••</span>
+                    <span class="inline-flex items-center gap-1 rounded border border-primary px-1.5 font-medium text-primary"><%= icon("copy", size: "xs") %> <%= t(".picture_copy") %></span>
+                  </div>
+                </div>
+              </div>
+              <figcaption class="mt-2 text-secondary"><%= t(".picture_caption") %></figcaption>
+            </figure>
+          </div>
+        </li>
+
+        <li class="flex gap-3">
+          <span class="shrink-0 w-8 h-8 rounded-full bg-inverse text-inverse font-medium flex items-center justify-center">3</span>
+          <div class="grow space-y-2"
+               data-controller="plaid-key-paste"
+               data-plaid-key-paste-url-value="<%= plaid_keys_onboarding_path %>"
+               data-plaid-key-paste-checking-value="<%= t(".checking") %>">
+            <h3 class="text-base font-medium text-primary"><%= t(".step3_title") %></h3>
+            <p class="text-sm text-secondary"><%= t(".step3_body") %></p>
+            <label for="plaid_keys_paste" class="sr-only"><%= t(".paste_label") %></label>
+            <textarea id="plaid_keys_paste" rows="3" autocomplete="off" autocapitalize="off" spellcheck="false"
+                      placeholder="<%= t(".paste_placeholder") %>"
+                      class="w-full rounded-lg border border-secondary bg-container p-3 font-mono text-base text-primary focus-ring"
+                      data-plaid-key-paste-target="input" data-testid="onboarding-plaid-paste"
+                      data-action="input->plaid-key-paste#changed paste->plaid-key-paste#pasted"></textarea>
+            <div class="flex gap-4 text-sm">
+              <span class="inline-flex items-center gap-1 text-secondary" data-plaid-key-paste-target="clientId"><%= icon("circle", size: "sm") %> <%= t(".found_client_id") %></span>
+              <span class="inline-flex items-center gap-1 text-secondary" data-plaid-key-paste-target="secret"><%= icon("circle", size: "sm") %> <%= t(".found_secret") %></span>
+            </div>
+            <p class="text-base font-medium" data-plaid-key-paste-target="message" data-testid="onboarding-plaid-message" aria-live="polite"></p>
+            <p class="text-xs text-secondary"><%= t(".privacy_note") %></p>
+          </div>
+        </li>
+      </ol>
+    <% else %>
+      <p class="text-base text-secondary"><%= t(".member_needs_admin") %></p>
+    <% end %>
+  <% end %>
+
+  <div class="flex items-center gap-3 text-xs text-secondary">
+    <span class="grow border-t border-secondary"></span><%= t(".or") %><span class="grow border-t border-secondary"></span>
+  </div>
+
+  <div data-controller="apple-card-drop"
+       data-apple-card-drop-url-value="<%= apple_card_imports_path %>"
+       data-apple-card-drop-dropping-class="border-primary bg-surface-hover"
+       data-action="dragover@window->apple-card-drop#dragOver dragleave@window->apple-card-drop#dragLeave drop@window->apple-card-drop#drop">
+    <label data-apple-card-drop-target="zone" data-testid="apple-card-drop"
+           class="block cursor-pointer rounded-xl border-2 border-dashed border-secondary p-6 text-center transition-colors hover:bg-surface-hover">
+      <div class="flex justify-center mb-2"><%= icon("upload", size: "lg") %></div>
+      <p class="font-medium text-primary"><%= t(".apple_title") %></p>
+      <p class="text-xs text-secondary mt-1"><%= t(".apple_subtitle") %></p>
+      <input type="file" multiple accept=".csv,.ofx,.qfx,.qbo,text/csv" class="sr-only"
+             data-apple-card-drop-target="input" data-action="change->apple-card-drop#pick">
+    </label>
+    <ul class="mt-3 space-y-1 text-sm" data-apple-card-drop-target="results" aria-live="polite"></ul>
+    <div class="hidden mt-3" data-apple-card-drop-target="done">
+      <%= render DS::Button.new(text: t(".go_to_dashboard"), href: finish_onboarding_path, full_width: true, data: { testid: "onboarding-go-dashboard" }) %>
+    </div>
+  </div>
+
+  <div class="text-center">
+    <%= render DS::Button.new(text: t(".skip"), variant: :outline, size: :lg, href: finish_onboarding_path, data: { testid: "onboarding-skip" }) %>
+  </div>
+</div>

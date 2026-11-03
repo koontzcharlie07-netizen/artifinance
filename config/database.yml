@@ -1,0 +1,23 @@
+default: &default
+  adapter: postgresql
+  encoding: unicode
+  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 3 } %>
+  host: <%= ENV.fetch("DB_HOST") { "127.0.0.1" } %>
+  port: <%= ENV.fetch("DB_PORT") { "5432" } %>
+  user: <%= ENV.fetch("POSTGRES_USER") { nil } %>
+  password: <%= ENV.fetch("POSTGRES_PASSWORD") { nil } %>
+
+development:
+  <<: *default
+  database: <%= ENV.fetch("POSTGRES_DB") { "sure_development" } %>
+
+test:
+  <<: *default
+  database: <%= ENV.fetch("POSTGRES_DB") { "sure_test" } %>
+
+production:
+  <<: *default
+  # Behind a transaction-mode pooler (PgBouncer, Supabase's 6543) set both to "false".
+  prepared_statements: <%= ENV.fetch("DB_PREPARED_STATEMENTS", "true") == "true" %>
+  advisory_locks: <%= ENV.fetch("DB_ADVISORY_LOCKS", "true") == "true" %>
+  database: <%= ENV.fetch("POSTGRES_DB") { "sure_production" } %>

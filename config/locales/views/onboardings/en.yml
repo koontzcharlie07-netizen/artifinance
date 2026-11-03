@@ -1,0 +1,108 @@
+---
+en:
+  onboardings:
+    header:
+      sign_out: Sign out
+      setup: Setup
+      preferences: Preferences
+      goals: Goals
+      start: Start
+    logout:
+      sign_out: Sign out
+    show:
+      title: Connect your bank
+      subtitle: Link your accounts and your dashboard fills in by itself. Everything else can wait.
+      plaid_title: Connect your bank with Plaid
+      plaid_subtitle: Plaid is the service banks use to share your balances and spending safely. It takes about 5 minutes, once.
+      connect: Connect my bank
+      step1_title: Open your Plaid keys page
+      step1_body: This opens Plaid's website in a new tab. Sign in, or make a free account if you don't have one.
+      step1_button: Open my Plaid keys
+      step1_signup: No Plaid account yet? Make one free
+      step2_title: Copy your two keys
+      step2_body_html: "On that page you'll see a <strong>Client ID</strong> (like a username) and a <strong>Secret</strong> (like a password). Click the copy button next to each one. Either Secret works, Sandbox or Production."
+      step3_title: Paste them here
+      step3_body: Paste one key, then the other, or both at once. Order doesn't matter. We check them with Plaid right away.
+      paste_label: Your Plaid keys
+      paste_placeholder: Paste here
+      found_client_id: Client ID
+      found_secret: Secret
+      checking: Checking with Plaid…
+      picture_alt: "Where to click on Plaid's keys page: Developers, then Keys, then the copy buttons next to Client ID and Secret."
+      picture_caption: "What Plaid's page looks like: click the copy button next to each key."
+      picture_menu_developers: Developers
+      picture_menu_keys: Keys
+      picture_client_id: client_id
+      picture_secret: Secret
+      picture_copy: copy
+      privacy_note: Your Secret is stored locked (encrypted) and is only ever shown again as its last 4 characters.
+      member_needs_admin: Your household admin needs to add Plaid keys before banks can be linked.
+      or: or
+      apple_title: Drop Apple Card statements here
+      apple_subtitle: CSV or OFX exported from Wallet (Apple Card → Card Balance → Statements → Export Transactions). Or click to choose files.
+      go_to_dashboard: Go to dashboard
+      skip: I'll do this later
+      setup_title: Let's set up your account
+      first_name: First name
+      first_name_placeholder: First name
+      last_name: Last name
+      last_name_placeholder: Last name
+      group_name: Group name
+      group_name_placeholder: Group name
+      household_name: Household name
+      household_name_placeholder: Household name
+      moniker_prompt: "Will be using %{product_name} with ..."
+      moniker_family: Family members (just yourself or with partner, teens, etc.)
+      moniker_group: Group of people (company, club, association, any other type)
+      country: Country
+      submit: Continue
+    plaid_keys:
+      saved_production: It worked! Opening Plaid so you can pick your bank…
+      saved_sandbox: "It worked! These are Plaid's practice keys (Sandbox): you'll see pretend banks. Opening Plaid…"
+      nothing_found: "We couldn't find a key in what you pasted. On Plaid's keys page, click the copy button next to Client ID, then paste here."
+      needs_secret: "Got your Client ID. Now copy the key labeled Secret and paste it here too."
+      needs_client_id: "Got a Secret. Now copy the key labeled Client ID (the shorter one at the top) and paste it here too."
+      two_client_ids: "That's two Client IDs. Paste just one Client ID and its Secret from the same Plaid account."
+      cut_off: "Part of a key seems to be missing. Use the copy button next to the key in Plaid instead of selecting the text."
+      rejected: "Plaid said no to these keys. Copy the key labeled Secret again with its copy button, and make sure the Client ID is from the same Plaid account."
+      not_approved: "Plaid accepted your account but it isn't approved for real banks yet. Paste the Sandbox Secret to try it out, or ask Plaid for Production access in their dashboard."
+      unreachable: "We couldn't reach Plaid just now. Wait a minute and paste again."
+    preferences:
+      title: Configure your preferences
+      subtitle: Let's configure your preferences.
+      example: Example account
+      preview: Preview how data displays based on preferences.
+      color_theme: Color theme
+      theme_system: System
+      theme_light: Light
+      theme_dark: Dark
+      locale: Language
+      currency: Currency
+      date_format: Date format
+      submit: Complete
+    goals:
+      title: What brings you here?
+      subtitle: Select one or more goals that you have with using %{product_name} as your personal finance tool.
+      unified_accounts: See all my accounts in one place
+      cashflow: Understand cashflow and expenses
+      budgeting: Manage financial plans and budgeting
+      partner: Manage finances with a partner
+      investments: Track investments
+      ai_insights: Let AI help me understand my finances
+      optimization: Analyze and optimize accounts
+      reduce_stress: Reduce financial stress or anxiety
+      submit: Next
+    trial:
+      title: Try PRIVATE_PRODUCT_NAME for 45 days
+      data_deletion: Data will be deleted then
+      description_html: Starting today you can give the product a good look.<br/>If you like it, self-host or contribute to continue using it here.
+      try_button: Try PRIVATE_PRODUCT_NAME for 45 days
+      continue_trial: Continue trial
+      upgrade: Upgrade
+      how_it_works: How things work here
+      today: Today
+      today_description: You'll get free access to PRIVATE_PRODUCT_NAME for 45 days on our AWS.
+      in_40_days: In 40 days (%{date})
+      in_40_days_description: We'll notify you to remind you to export your data.
+      in_45_days: In 45 days (%{date})
+      in_45_days_description: We delete your data — contribute to continue using PRIVATE_PRODUCT_NAME here!

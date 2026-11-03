@@ -1,0 +1,79 @@
+---
+en:
+  activerecord:
+    errors:
+      models:
+        family_plaid_credential:
+          attributes:
+            base:
+              encryption_not_configured: Plaid keys can't be saved until the server's ACTIVE_RECORD_ENCRYPTION_* keys are set.
+              plaid_invalid_keys: Plaid didn't accept these keys. Check that the client ID and secret are copied exactly, and that the secret matches the environment you picked (Sandbox and Production have different secrets).
+              plaid_unauthorized_environment: Your Plaid account isn't approved for Production yet. Pick Sandbox, or request Production access in the Plaid dashboard.
+              plaid_plaid_error: Plaid returned an error when checking these keys. Nothing was saved. Try again in a minute.
+              plaid_unreachable: Couldn't reach Plaid to check these keys. Nothing was saved. Try again in a minute.
+              relink_confirmation_required:
+                one: These keys are from a different Plaid account or environment, so 1 linked bank would stop syncing and need to be linked again. Tick the box to confirm, then save again.
+                other: These keys are from a different Plaid account or environment, so %{count} linked banks would stop syncing and need to be linked again. Tick the box to confirm, then save again.
+  settings:
+    plaid_credentials:
+      not_authorized: Only an admin can manage Plaid keys.
+      show:
+        page_title: Plaid keys
+        keys_title: Your Plaid API keys
+        keys_subtitle: Used for your own bank links and syncs. Stored encrypted; only the last 4 characters are ever shown again.
+        encryption_missing: The server has no ACTIVE_RECORD_ENCRYPTION_* keys set, so Plaid keys can't be saved yet.
+        none_saved: No keys saved yet. You need your own Plaid keys before you can link a bank. Follow the steps below.
+        instance_allowed: This household may also use the server's shared Plaid keys (owner setting).
+        confirm_relink:
+          one: I understand 1 linked bank will need to be linked again
+          other: I understand %{count} linked banks will need to be linked again
+        switch_warning: Changing to keys from a different Plaid account, or switching between Sandbox and Production, means banks already linked stop syncing and must be linked again. Replacing only the secret for the same account is safe.
+        client_id: Client ID
+        secret: Secret
+        environment: Environment
+        ending_in: "•••• %{last4}"
+        keep_saved: Leave blank to keep the saved value
+        environments:
+          sandbox: Sandbox
+          production: Production
+        relink_hint: Your keys are checked with Plaid before they're saved.
+        save: Save keys
+        usage_title: Where they're used
+        usage_subtitle: Which keys your bank connections use.
+        new_links: "New bank links use: %{source}"
+        sources:
+          family: your keys
+          instance: the server's shared keys
+          none: nothing yet (add your keys first)
+        items_on_family_keys:
+          one: 1 bank connection uses your keys
+          other: "%{count} bank connections use your keys"
+        items_on_instance_keys:
+          one: 1 bank connection uses the server's shared keys
+          other: "%{count} bank connections use the server's shared keys"
+        remove: Remove keys
+        remove_confirmation: Remove your Plaid keys? Banks linked with them stop syncing until you add keys from the same Plaid account and environment again.
+        guide:
+          title: Set up Plaid (about 10 minutes)
+          subtitle: PRIVATE_PRODUCT_NAME connects to banks through Plaid using your own Plaid account, so your bank connections and Plaid costs are yours.
+          step1_title: 1. Create a Plaid account
+          step1_body: Sign up at dashboard.plaid.com/signup. Choose that you're building for personal use. Sandbox access is free and immediate.
+          step2_title: 2. Find your keys
+          step2_body: "In the Plaid dashboard, open Developers → Keys. Copy the client ID, and the secret for the environment you want: the Sandbox secret for testing, or the Production secret for real banks."
+          step3_title: 3. Allow the PRIVATE_PRODUCT_NAME redirect URI
+          step3_body: "Open Developers → API → Allowed redirect URIs, add the address below exactly, and save. Without it, banks that use OAuth (Chase, Bank of America, Wells Fargo and many others) fail at login."
+          step4_title: 4. Paste the keys here
+          step4_body: Enter the client ID and secret above, pick the matching environment, and save. PRIVATE_PRODUCT_NAME checks them with Plaid before saving.
+          environments_title: Sandbox or Production?
+          sandbox_body: "Sandbox: free, for testing only. You see fake banks (for example First Platypus Bank, username user_good, password pass_good). No real data."
+          production_body: Production connects to your real bank accounts.
+          trial_body: "New US and Canadian Plaid accounts get a free Trial plan for Production: real data, up to 10 bank connections (Items), and most OAuth banks without the full Production application. Beyond that, apply for full Production in the dashboard; Plaid then bills you directly."
+          limited_body: Older accounts on Limited Production can't reach the big OAuth banks until full Production is approved.
+          privacy_note: Your keys are stored encrypted and never shown again in full. Deleting your PRIVATE_PRODUCT_NAME account removes your bank connections at Plaid and deletes your keys.
+      update:
+        saved: Plaid keys checked with Plaid and saved.
+        saved_relink:
+          one: Plaid keys checked and saved. 1 bank linked with your old keys needs to be linked again.
+          other: Plaid keys checked and saved. %{count} banks linked with your old keys need to be linked again.
+      destroy:
+        removed: Plaid keys removed.
